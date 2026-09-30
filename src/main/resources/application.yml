@@ -1,0 +1,74 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: mediconnect-ai
+
+  # Database Configuration (PostgreSQL container in Docker)
+  datasource:
+    url: jdbc:postgresql://localhost:5432/mediconnect_db
+    driver-class-name: org.postgresql.Driver
+    username: mediconnect_user
+    password: mediconnect_pass
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Flyway Migration Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+
+
+  # Redis Configuration (with lazy failover)
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 1000ms
+
+  # Kafka Configuration
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+
+  # Spring AI Configuration
+  ai:
+    ollama:
+      base-url: http://localhost:11434
+      chat:
+        options:
+          model: qwen2.5:1.5b
+          temperature: 0.2
+      embedding:
+        options:
+          model: all-minilm
+    openai:
+      api-key: ${GEMINI_API_KEY:${OPENAI_API_KEY:YOUR_GEMINI_API_KEY}}
+      base-url: https://generativelanguage.googleapis.com/v1beta/openai/
+      chat:
+        options:
+          model: gemini-3.5-flash-lite
+          temperature: 0.2
+
+
+# Custom Application Properties
+mediconnect:
+  ai:
+    prefer-ollama: false
+    fallback-mode: true
+  kafka:
+    enabled: false
+
+

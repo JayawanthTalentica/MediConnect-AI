@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediConnect AI - Smart Clinic & Healthcare AI Agent Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(255, 255, 255, 0.1);
+            --primary-accent: #38bdf8;
+            --primary-gradient: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+            --secondary-gradient: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            --success-color: #4ade80;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Navigation */
+        header {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: var(--primary-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            -webkit-text-fill-color: initial;
+        }
+
+        .status-badges {
+            display: flex;
+            gap: 12px;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success-color);
+            box-shadow: 0 0 8px var(--success-color);
+        }
+
+        /* Layout Grid */
+        main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            padding: 20px;
+            flex: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .panel {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: calc(100vh - 120px);
+        }
+
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .panel-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* AI Chat Container */
+        .chat-body {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .message {
+            display: flex;
+            gap: 12px;
+            max-width: 90%;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .avatar.user { background: var(--secondary-gradient); color: white; }
+        .avatar.agent { background: var(--primary-gradient); color: white; }
+
+        .message-bubble {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-color);
+            padding: 14px 18px;
+            border-radius: 14px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            color: #e2e8f0;
+            white-space: pre-wrap;
+        }
+
+        .message.user .message-bubble {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: white;
+        }
+
+        .chat-input-area {
+            padding: 16px 20px;
+            border-top: 1px solid var(--border-color);
+            background: rgba(15, 23, 42, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .prompt-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+        }
+
+        .pill {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: var(--primary-accent);
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .pill:hover {
+            background: rgba(56, 189, 248, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .input-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: var(--primary-accent);
+        }
+
+        button.send-btn {
+            background: var(--primary-gradient);
+            border: none;
+            color: white;
+            border-radius: 12px;
+            padding: 0 20px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.1s ease;
+        }
+
+        button.send-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Clinic Dashboard Right Panel */
+        .dashboard-sections {
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .dash-card {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .dash-card-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th { color: var(--text-muted); font-weight: 500; }
+
+        .status-tag {
+            background: rgba(74, 222, 128, 0.15);
+            color: var(--success-color);
+            padding: 3px 8px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        /* Kafka Log Ticker */
+        .kafka-feed {
+            background: #050b14;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            color: #38bdf8;
+            max-height: 160px;
+            overflow-y: auto;
+        }
+
+        .kafka-entry {
+            margin-bottom: 6px;
+            word-break: break-all;
+            opacity: 0;
+            animation: fadeIn 0.4s forwards;
+        }
+
+        @media (max-width: 1024px) {
+            main { grid-template-columns: 1fr; }
+            .panel { height: auto; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <span>MediConnect AI Portal</span>
+        </div>
+        <div class="status-badges">
+            <a href="/doc-analyzer.html" style="text-decoration:none; color:#d946ef; border:1px solid rgba(217, 70, 239, 0.4); background:rgba(217, 70, 239, 0.1); border-radius:20px; padding:6px 14px; font-size:0.8rem; font-weight:600; display:flex; align-items:center; gap:8px;">
+                <i class="fa-solid fa-file-circle-check"></i> Single-Doc Analyzer
+            </a>
+            <div class="badge"><div class="badge-dot"></div> Postgres (pgvector)</div>
+            <div class="badge"><div class="badge-dot"></div> Redis Memory</div>
+            <div class="badge"><div class="badge-dot"></div> Kafka Stream</div>
+            <div class="badge"><div class="badge-dot"></div> Spring AI Agent</div>
+        </div>
+
+    </header>
+
+    <main>
+        <!-- LEFT PANEL: AI AGENT CHAT -->
+        <section class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fa-solid fa-robot" style="color: var(--primary-accent)"></i>
+                    MediConnect Clinical AI Agent
+                </div>
+                <span style="font-size: 0.8rem; color: var(--text-muted)">Session: <span id="sessionDisplay">sess_101</span></span>
+            </div>
+
+            <div class="chat-body" id="chatBody">
+                <div class="message agent">
+                    <div class="avatar agent"><i class="fa-solid fa-user-doctor"></i></div>
+                    <div class="message-bubble">
+👋 **Hello! Welcome to MediConnect AI.**
+
+I am your clinical healthcare assistant. How can I help you today?
+- **Lookup Patient Insurance & Calculate Copays** (e.g. *"How much should I pay and my name is Adam"*)
+- **Search Available Doctor Slots** (Neurology, Cardiology, Dermatology)
+- **Book Clinic Appointments** into our healthcare database
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-input-area">
+                <div class="prompt-pills">
+                    <div class="pill" onclick="usePill('I have severe headache, what doctors are available?')">💡 Find Doctor for Headache</div>
+                    <div class="pill" onclick="usePill('How much should I pay for a Neurology visit? My name is Adam.')">💰 Calculate Payment (Adam)</div>
+                    <div class="pill" onclick="usePill('What is covered under Aetna Silver for Cardiology?')">📋 Check Aetna Coverage</div>
+                </div>
+                <div class="input-row">
+                    <input type="text" id="userInput" placeholder="Ask MediConnect AI anything..." onkeydown="if(event.key==='Enter') sendMessage()">
+                    <button class="send-btn" onclick="sendMessage()"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- RIGHT PANEL: DASHBOARD & KAFKA STREAM -->
+        <section class="panel">
+            <div class="panel-header">
+                <div class="panel-title">
+                    <i class="fa-solid fa-hospital-user" style="color: #a855f7"></i>
+                    Clinic Network & Kafka Event Stream
+                </div>
+                <button onclick="loadClinicData()" style="background:none; border:none; color:var(--primary-accent); cursor:pointer"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+
+            <div class="dashboard-sections">
+                <!-- Doctors & Slots -->
+                <div class="dash-card">
+                    <div class="dash-card-title">
+                        <span><i class="fa-solid fa-user-md"></i> Available Specialists & Open Slots</span>
+                        <span id="slotCount" style="color:var(--primary-accent)">Loading...</span>
+                    </div>
+                    <table id="doctorsTable">
+                        <thead>
+                            <tr>
+                                <th>Doctor</th>
+                                <th>Specialty</th>
+                                <th>Branch</th>
+                                <th>Fee</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="4" style="color:var(--text-muted)">Loading doctors...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Booked Appointments -->
+                <div class="dash-card">
+                    <div class="dash-card-title">
+                        <span><i class="fa-solid fa-calendar-check"></i> Confirmed Appointments</span>
+                    </div>
+                    <table id="appointmentsTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Patient</th>
+                                <th>Doctor</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td colspan="5" style="color:var(--text-muted)">No booked appointments yet.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Upload PDF Policy Document for RAG Search -->
+                <div class="dash-card" style="border-color: rgba(56, 189, 248, 0.4)">
+                    <div class="dash-card-title">
+                        <span><i class="fa-solid fa-file-pdf" style="color: #ef4444"></i> Upload PDF Policy Manual (RAG Ingestion)</span>
+                    </div>
+                    <div style="display: flex; gap: 10px; align-items: center; margin-top: 8px;">
+                        <input type="file" id="pdfFileInput" accept=".pdf" style="flex:1; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 8px; font-size: 0.8rem;">
+                        <input type="text" id="pdfPlanNameInput" placeholder="Plan Name (optional)" style="width: 140px; background: rgba(0,0,0,0.2); border: 1px solid var(--border-color); color: var(--text-main); padding: 8px; border-radius: 8px; font-size: 0.8rem;">
+                        <button onclick="uploadPdfPolicy()" style="background: var(--primary-gradient); border: none; color: white; padding: 8px 14px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.8rem;">
+                            <i class="fa-solid fa-upload"></i> Upload
+                        </button>
+                    </div>
+                    <div id="uploadStatus" style="margin-top: 8px; font-size: 0.75rem; color: var(--success-color);"></div>
+                </div>
+
+                <!-- Kafka Event Stream Log -->
+                <div class="dash-card">
+                    <div class="dash-card-title">
+                        <span><i class="fa-solid fa-bolt" style="color:#f59e0b"></i> Live Kafka Topic Feed ('appointment-events')</span>
+                    </div>
+                    <div class="kafka-feed" id="kafkaFeed">
+                        <div class="kafka-entry">[SYSTEM] Connected to Kafka Event Stream listener. Waiting for agent events...</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const sessionId = "sess_" + Math.floor(Math.random() * 900 + 100);
+        document.getElementById("sessionDisplay").innerText = sessionId;
+
+        function usePill(text) {
+            document.getElementById("userInput").value = text;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const inputEl = document.getElementById("userInput");
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            appendMessage("user", text);
+            inputEl.value = "";
+
+            const chatBody = document.getElementById("chatBody");
+            const loadingMsg = document.createElement("div");
+            loadingMsg.className = "message agent";
+            loadingMsg.id = "loadingMsg";
+            loadingMsg.innerHTML = `
+                <div class="avatar agent"><i class="fa-solid fa-spinner fa-spin"></i></div>
+                <div class="message-bubble" style="color: var(--text-muted)">MediConnect AI is checking insurance policies & DB tools...</div>
+            `;
+            chatBody.appendChild(loadingMsg);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            try {
+                const res = await fetch("/api/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ sessionId, message: text })
+                });
+                const data = await res.json();
+                document.getElementById("loadingMsg")?.remove();
+                appendMessage("agent", data.response);
+                loadClinicData();
+            } catch (err) {
+                document.getElementById("loadingMsg")?.remove();
+                appendMessage("agent", "⚠️ Error connecting to server: " + err.message);
+            }
+        }
+
+        function appendMessage(role, content) {
+            const chatBody = document.getElementById("chatBody");
+            const msgDiv = document.createElement("div");
+            msgDiv.className = `message ${role}`;
+
+            const icon = role === "user" ? "fa-user" : "fa-user-doctor";
+            msgDiv.innerHTML = `
+                <div class="avatar ${role}"><i class="fa-solid ${icon}"></i></div>
+                <div class="message-bubble">${formatMarkdown(content)}</div>
+            `;
+            chatBody.appendChild(msgDiv);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function formatMarkdown(text) {
+            return text
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br>');
+        }
+
+        async function loadClinicData() {
+            try {
+                // Doctors
+                const docsRes = await fetch("/api/clinic/doctors");
+                const docs = await docsRes.json();
+                const docsTbody = document.querySelector("#doctorsTable tbody");
+                docsTbody.innerHTML = docs.map(d => `
+                    <tr>
+                        <td><strong>${d.name}</strong></td>
+                        <td><span style="color:var(--primary-accent)">${d.specialty}</span></td>
+                        <td>${d.hospitalBranch}</td>
+                        <td>$${d.consultationFee.toFixed(2)}</td>
+                    </tr>
+                `).join("");
+
+                // Appointments
+                const apptRes = await fetch("/api/clinic/appointments");
+                const appts = await apptRes.json();
+                const apptTbody = document.querySelector("#appointmentsTable tbody");
+                if (appts.length === 0) {
+                    apptTbody.innerHTML = `<tr><td colspan="5" style="color:var(--text-muted)">No appointments booked yet.</td></tr>`;
+                } else {
+                    apptTbody.innerHTML = appts.map(a => `
+                        <tr>
+                            <td>#${a.id}</td>
+                            <td>${a.patient.name}</td>
+                            <td>${a.doctor.name}</td>
+                            <td>${new Date(a.slot.slotTime).toLocaleString()}</td>
+                            <td><span class="status-tag">${a.status}</span></td>
+                        </tr>
+                    `).join("");
+                }
+            } catch (err) {
+                console.error("Error loading clinic data", err);
+            }
+        }
+
+        // Connect Server-Sent Events for Live Kafka Feeds
+        const evtSource = new EventSource("/api/clinic/events/stream");
+        evtSource.addEventListener("kafka-event", (event) => {
+            const kafkaFeed = document.getElementById("kafkaFeed");
+            const entry = document.createElement("div");
+            entry.className = "kafka-entry";
+            entry.innerHTML = `<span style="color:#4ade80">[KAFKA EVENT]</span> ${event.data}`;
+            kafkaFeed.prepend(entry);
+            loadClinicData();
+        });
+
+        async function uploadPdfPolicy() {
+            const fileInput = document.getElementById("pdfFileInput");
+            const planNameInput = document.getElementById("pdfPlanNameInput");
+            const statusDiv = document.getElementById("uploadStatus");
+
+            if (!fileInput.files || fileInput.files.length === 0) {
+                statusDiv.style.color = "#f87171";
+                statusDiv.innerText = "Please select a .pdf file first.";
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+            if (planNameInput.value.trim()) {
+                formData.append("planName", planNameInput.value.trim());
+            }
+
+            statusDiv.style.color = "#38bdf8";
+            statusDiv.innerText = "⏳ Ingesting & chunking PDF document for vector RAG search...";
+
+            try {
+                const res = await fetch("/api/policy/upload", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+                if (res.ok && data.status === "success") {
+                    statusDiv.style.color = "#4ade80";
+                    statusDiv.innerText = "✅ " + data.message;
+                    fileInput.value = "";
+                    planNameInput.value = "";
+                } else {
+                    statusDiv.style.color = "#f87171";
+                    statusDiv.innerText = "⚠️ Upload failed: " + (data.message || "Unknown error");
+                }
+            } catch (err) {
+                statusDiv.style.color = "#f87171";
+                statusDiv.innerText = "⚠️ Network error: " + err.message;
+            }
+        }
+
+        loadClinicData();
+    </script>
+</body>
+</html>

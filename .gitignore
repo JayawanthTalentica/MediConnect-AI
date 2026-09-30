@@ -1,0 +1,30 @@
+# Target & Build Output
+target/
+*.class
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+
+# Local Maven binaries/wrapper if unwanted or build cache
+maven/
+
+# IDE & Editor Configs
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/
+
+# OS / Temp Files
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.bak
+
+# Environment & Local Secrets
+*.env
+.env.*
